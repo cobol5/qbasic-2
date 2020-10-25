@@ -1,0 +1,26 @@
+DO
+K$ = ""
+DO
+K$ = INKEY$
+LOOP WHILE K$ = ""
+GOSUB UpOrDown
+LOOP
+
+UpOrDown:
+PRINT ASC(K$)
+RETURN
+
+
+
+
+'UpOrDown:
+SELECT CASE K$
+CASE CHR$(72)
+PRINT "UP"
+CASE CHR$(80)
+PRINT "Down"
+CASE ELSE
+PRINT "None"
+END SELECT
+RETURN
+
