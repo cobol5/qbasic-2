@@ -6,11 +6,12 @@
 '                              CHAD LOFTIS
 '                                  AND
 '                              TOBY TOLAND
-'                              VERSION 1.2
+'                              VERSION 1.3
 '
 '
-'.......this is my final version (1.2) most likely
 '.......added speed adjuster to fix the intro - april 29, 2002
+'.......added quit option in main mall - october 22, 2002
+'.......update now documented at https://github.com/thinktt/qbasic
 
 
 SCREEN 0
@@ -19,22 +20,39 @@ COLOR 15
 CLS
 
 
-'.............Speed  Adjuster.....
-PRINT "Version 1.2"
-PRINT "Adjusting speed of game for your computer"
-TakenTime$ = TIME$: DO
-LOOP WHILE TakenTime$ = TIME$
-TakenTime$ = TIME$: DO
-LoopTime = LoopTime + 1
-LOOP WHILE TakenTime$ = TIME$
-TimeUnit = CINT(LoopTime / 2000)
-PRINT TimeUnit
-A$ = INPUT$(1)
+'.....................Speed Adjuster 2.0.................
+
+PL = 0
+ST = 0 ' .........start time
+ET = 0 '..........end time
+XT = 0 '..........X cordinate simulator (like you have any idea)
+PRINT "Adjusting speed for your computer."
+
+DO
+XT = 0
+ST = 0
+ET = 0
+ST = TIMER
+DO
+XT = XT + 1
+FOR P = 1 TO PL: NEXT P
+LOOP UNTIL XT = 641
+ET = TIMER
+'CLS
+'LOCATE 12, 1: PRINT ET - ST
+'LOCATE 13, 1: PRINT PL
+IF (ET - ST) < .24 THEN PL = PL + 10
+A$ = INKEY$
+LOOP UNTIL (ET - ST) > .25
+Timeunit = PL
 CLS
 
 
+
+
+
 '.................................Varieble Definitions For Game...............
-Music$ = ""
+Music$ = "ON"
 D1 = 1'..............How many charachters down the dumb goes
 O1 = 11'................How many charachters over the dumb gose
 Bounce = 7'.................Keeps the dumb bouncen
@@ -55,7 +73,12 @@ C4 = 9
 C5 = 4
 
 COLOR 4
-PRINT "NOTE:Press enter a bunch to skip dumb questions"
+PRINT "WARNING: Playing this game has been linked to"
+PRINT "IQ depletion, but it's not as bad as watching TV."
+PRINT "NOTE: While in the game press Q while in the"
+PRINT "center of the mall if you wish to quit the game."
+PRINT "ALSO NOTE:Press enter a bunch to skip the following"
+PRINT "dumb questions."
 COLOR 15
 
 PRINT "Do you want to customize the colors(Y\N)?"
@@ -139,12 +162,12 @@ END IF
 DumbControl:
 DO
 D1 = D1 + 1
-GOSUB DUMB
+GOSUB dumb
 LOOP UNTIL D1 = 12
 IF Bounce = 12 THEN GOTO ChadToby
 DO
 D1 = D1 - 1
-GOSUB DUMB
+GOSUB dumb
 LOOP UNTIL D1 = Bounce
 Bounce = Bounce + 1
 GOTO DumbControl
@@ -155,7 +178,7 @@ FadeInWord$ = "MALL ADVENTURE": C2 = 9: D2 = 19: O2 = 14: GOSUB FadeIn
 PL = 15000: GOSUB Pause
 GOTO MainGame
 
-DUMB:
+dumb:
 CLS : COLOR C1
 LOCATE D1 + 0, O1: PRINT "DDD  U  U M   M BBB"
 LOCATE D1 + 1, O1: PRINT "D  D U  U MM MM B  B"
@@ -179,7 +202,7 @@ RETURN
 Pause:
 DO
 P = P + 1
-LOOP UNTIL P = PL * TimeUnit
+LOOP UNTIL P = (PL / 12) * Timeunit
 P = 0
 RETURN
 
@@ -294,6 +317,24 @@ END
 END IF
 GOTO MainGame
 
+QuitGame:
+CLS : COLOR C3: PRINT
+'...........sentence length.....................
+PRINT "Do you wish to quit, (Y\N)?"
+A$ = INPUT$(1, 0)
+IF A$ = "Y" OR A$ = "y" THEN
+CLS : COLOR C3: PRINT
+PRINT "So sad to see you go, (NOT!)."
+COLOR C5: PRINT : PRINT "             Press any key": A$ = INPUT$(1, 0)
+END
+END IF
+GOTO MallCentral
+
+
+
+
+
+
 
 '........................................MAIN GAME...........................
 MainGame:
@@ -354,6 +395,10 @@ CASE "6"
 IF GeekBook$ = "Have" OR BigBook$ = "Have" OR Goats$ = "Have" THEN
 GOTO ReadBook
 END IF
+CASE "Q"
+GOTO QuitGame
+CASE "q"
+GOTO QuitGame
 END SELECT
 GOTO MallCentral
 
